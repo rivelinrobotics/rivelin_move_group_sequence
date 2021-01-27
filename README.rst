@@ -66,3 +66,5 @@ Sequence
     sequence.append(Ptp(goal=pose_after_relative, vel_scale=0.2))
 
     sequencer.plan(sequence)
+
+More examples can be adapted from the `pilz_robot_programming <https://github.com/PilzDE/pilz_industrial_motion/tree/melodic-devel/pilz_robot_programming>`_ repository.
