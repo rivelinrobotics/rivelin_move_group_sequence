@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package>
+  <name>move_group_sequence</name>
+  <version>0.0.1</version>
+  <description>An Easy to use API to execute standard industrial robot commands like Ptp, Lin, Circ and Sequence using Moveit. A fork of pilz_robot_programming.</description>
+  <maintainer email="robin@additiveautomations.com">Robin Edwards</maintainer>
+  <license>LGPLv3</license>
+  <run_depend>moveit_commander</run_depend>
+  <run_depend>tf2_ros</run_depend>
+  <run_depend>tf2_geometry_msgs</run_depend>
+  <run_depend>tf_conversions</run_depend>
+  <run_depend>pilz_msgs</run_depend>
+  <run_depend>pilz_trajectory_generation</run_depend>
+  <run_depend>rospy</run_depend>
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>rospy</build_depend>
+  <test_depend>rostest</test_depend>
+</package>
