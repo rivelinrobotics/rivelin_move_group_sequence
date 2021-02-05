@@ -8,7 +8,9 @@ Based on `pilz_robot_programming <https://github.com/PilzDE/pilz_industrial_moti
 Import
 ^^^
 
+
 .. code-block:: python
+
     from move_group_sequence import MoveGroupSequence, Ptp, Lin, Circ
     from geometry_msgs.msg import Point, Pose
     from moveit_commander import MoveGroupCommander
@@ -16,6 +18,7 @@ Import
     PLANNING_GROUP = "manipulator"
     move_group = MoveGroupCommander(PLANNING_GROUP)
     sequencer = MoveGroupSequence(move_group)
+
 
 Plan and execute
 ^^^^
