@@ -163,8 +163,15 @@ class BaseCmd(_AbstractCmd):
         self._robot_reference_frame = move_group.get_planning_frame()
         self._active_joints = move_group.get_active_joints()
         self._start_joint_states = move_group.get_current_joint_values()
-        self._start_pose = move_group.get_current_pose(end_effector_link=self._target_link).pose
+
         self._tf_buffer = get_tf_buffer()
+
+        # Convert current pose to the reference frame
+        start = move_group.get_current_pose(end_effector_link=self._target_link)
+        if self._reference_frame == self._robot_reference_frame:
+            self._start_pose = start.pose
+        else:
+            self._start_pose = self._transform_frame(self._robot_reference_frame, start.pose, self._reference_frame)
 
         # Set general info
         req.planner_id = self._planner_id
@@ -255,7 +262,7 @@ class BaseCmd(_AbstractCmd):
             self._goal = _pose_relative_to_absolute(self._start_pose, self._goal)
 
         if not self._reference_frame == _DEFAULT_BASE_LINK:
-            return self._to_robot_reference(self._reference_frame, self._goal)
+            return self._transform_frame(self._reference_frame, self._goal, self._robot_reference_frame)
 
         # in case of uninitialized orientation, set the goal orientation as current
         if _is_quaternion_initialized(self._goal.orientation):
@@ -270,7 +277,7 @@ class BaseCmd(_AbstractCmd):
         )
         return goal_joint_state
 
-    def _to_robot_reference(self, pose_frame: str, goal_pose_custom_ref: Pose) -> Pose:
+    def _transform_frame(self, pose_frame: str, goal_pose_custom_ref: Pose, target_frame: str) -> Pose:
         """
         Transforms a pose from a custom reference frame to one in robot reference frame.
         :param pose_frame: is the custom reference frame of the pose.
@@ -279,13 +286,17 @@ class BaseCmd(_AbstractCmd):
         """
         if not _is_quaternion_initialized(goal_pose_custom_ref.orientation):
             goal_pose_custom_ref.orientation = Quaternion(w=1)
-        if pose_frame == self._robot_reference_frame:
+
+        if pose_frame == target_frame:
             return goal_pose_custom_ref
 
         stamped = PoseStamped()
         stamped.header.frame_id = pose_frame
         stamped.pose = goal_pose_custom_ref
-        return self._tf_buffer.transform(stamped, self._robot_reference_frame).pose
+
+        return self._tf_buffer.transform_full(
+            stamped, target_frame, rospy.Time(0), "world", rospy.Duration(1)
+        ).pose
 
     @staticmethod
     def _calc_acc_scale(vel_scale: float) -> float:
@@ -484,7 +495,7 @@ class Circ(BaseCmd):
             path_point.position = self._interim
 
         if self._reference_frame:
-            path_point = self._to_robot_reference(self._reference_frame, path_point)
+            path_point = self._transform_frame(self._reference_frame, path_point, self._robot_reference_frame)
 
         position_constraint = _to_pose_constraint(
             path_point, self._robot_reference_frame, self._target_link, float("+inf")
