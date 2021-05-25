@@ -17,8 +17,8 @@ from moveit_msgs.msg import (
     PositionConstraint,
     RobotTrajectory,
 )
-from pilz_msgs.msg import MotionSequenceItem, MotionSequenceRequest
-from pilz_msgs.srv import GetMotionSequence, GetMotionSequenceResponse
+from moveit_msgs.msg import MotionSequenceItem, MotionSequenceRequest
+from moveit_msgs.srv import GetMotionSequence, GetMotionSequenceResponse
 from shape_msgs.msg import SolidPrimitive
 from tf import transformations
 
