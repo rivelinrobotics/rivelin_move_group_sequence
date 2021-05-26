@@ -635,16 +635,16 @@ class MoveGroupSequence:
             raise ValueError("Unsupported command: ", command)
 
         response: GetMotionSequenceResponse = self._service(
-            commands=MotionSequenceRequest(items=items)
+            request=MotionSequenceRequest(items=items)
         )
 
-        success = response.error_code.val == MoveItErrorCodes.SUCCESS
+        success = response.response.error_code.val == MoveItErrorCodes.SUCCESS
         if not success:
-            raise SequencePlanningError(response.error_code.val)
+            raise SequencePlanningError(response.response.error_code.val)
 
-        self._trajectories = response.planned_trajectory
+        self._trajectories = response.response.planned_trajectories
 
-        return success, self._trajectories, response.planning_time, response.error_code.val
+        return success, self._trajectories, response.response.planning_time, response.response.error_code.val
 
     def execute(self, trajectories: Optional[List[RobotTrajectory]] = None) -> None:
         to_execute = trajectories or self._trajectories
